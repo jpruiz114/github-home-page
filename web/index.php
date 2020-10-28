@@ -90,6 +90,12 @@ try {
     // Output the image
     header( 'Content-type: image/png' );
 
+    $ts = gmdate( "D, d M Y H:i:s" ) . " GMT";
+    header( "Expires: $ts" );
+    header( "Last-Modified: $ts" );
+    header( "Pragma: no-cache" );
+    header( "Cache-Control: no-cache, must-revalidate" );
+
     imagepng( $image );
     imagedestroy( $image );
 } catch ( SourceWatcherException $e ) {
