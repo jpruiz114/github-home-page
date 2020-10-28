@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb5e68d141d8df79b7ef0b2d412317bd",
+    "content-hash": "89b4abf51402734ebf00bff1f372653d",
     "packages": [
         {
             "name": "coco/source-watcher",
@@ -2494,7 +2494,7 @@
     "platform": {
         "ext-curl": "*",
         "ext-dom": "*",
-        "ext-json": "*",
+        "ext-gd": "*",
         "php": "~7.4"
     },
     "platform-dev": []
