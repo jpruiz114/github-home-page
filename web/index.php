@@ -12,14 +12,36 @@ use Coco\SourceWatcher\Core\Row;
 use Coco\SourceWatcher\Core\SourceWatcherException;
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable( __DIR__ . "/../" );
-$dotenv->load();
+function getEnvironmentVariable ( string $variableName, $default, $castingFunctionName = null )
+{
+    $keyExists = array_key_exists( $variableName, $_ENV );
+    $value = null;
 
-$dbHost = getenv( "DB_HOST" );
-$dbUsername = getenv( "DB_USERNAME" );
-$dbPassword = getenv( "DB_PASSWORD" );
-$dbPort = getenv( "DB_PORT" );
-$dbDatabase = getenv( "DB_DATABASE" );
+    if ( $keyExists ) {
+        $value = $_ENV[$variableName];
+    } else {
+        $dotenv = Dotenv::createImmutable( __DIR__ . "/../" );
+        $dotenv->load();
+
+        $value = getenv( $variableName );
+
+        if ( empty( $value ) ) {
+            $value = $default;
+        }
+    }
+
+    if ( !empty( $castingFunctionName ) ) {
+        return call_user_func( $castingFunctionName, $value );
+    }
+
+    return $value;
+}
+
+$dbHost = getEnvironmentVariable( "DB_HOST", null );
+$dbUsername = getEnvironmentVariable( "DB_USERNAME", null );
+$dbPassword = getEnvironmentVariable( "DB_PASSWORD", null );
+$dbPort = getEnvironmentVariable( "DB_PORT", null );
+$dbDatabase = getEnvironmentVariable( "DB_DATABASE", null );
 
 $mysqlConnector = new MySqlConnector();
 $mysqlConnector->setHost( $dbHost );
