@@ -56,19 +56,24 @@ $databaseOutput = new DatabaseOutput( $mysqlConnector );
 $databaseLoader = new DatabaseLoader();
 $databaseLoader->setOutput( $databaseOutput );
 
-function getIpAddress () : string
+function getIpAddress () : array
 {
-    if ( !empty( $_SERVER["HTTP_CLIENT_IP"] ) ) {
-        return $_SERVER["HTTP_CLIENT_IP"];
-    } elseif ( !empty( $_SERVER["HTTP_X_FORWARDED_FOR"] ) ) {
-        return $_SERVER["HTTP_X_FORWARDED_FOR"];
-    } else {
-        return $_SERVER["REMOTE_ADDR"];
-    }
+    $result = [];
+    $result["HTTP_CLIENT_IP"] = empty( $_SERVER["HTTP_CLIENT_IP"] ) ? null : $_SERVER["HTTP_CLIENT_IP"];
+    $result["HTTP_X_FORWARDED_FOR"] = empty( $_SERVER["HTTP_X_FORWARDED_FOR"] ) ? null : $_SERVER["HTTP_X_FORWARDED_FOR"];
+    $result["REMOTE_ADDR"] = empty( $_SERVER["REMOTE_ADDR"] ) ? null : $_SERVER["REMOTE_ADDR"];
+
+    return $result;
 }
 
 try {
-    $databaseLoader->load( new Row( [ "ip_address" => getIpAddress() ] ) );
+    $ipInfo = getIpAddress();
+
+    $databaseLoader->load( new Row( [
+        "http_client_ip" => $ipInfo["HTTP_CLIENT_IP"],
+        "http_x_forwarded_for" => $ipInfo["HTTP_X_FORWARDED_FOR"],
+        "remote_addr" => $ipInfo["REMOTE_ADDR"]
+    ] ) );
 
     $query = "SELECT COUNT(id) AS total_visits FROM visit";
 
@@ -99,4 +104,5 @@ try {
     imagepng( $image );
     imagedestroy( $image );
 } catch ( SourceWatcherException $e ) {
+    echo $e->getMessage();
 }
