@@ -67,6 +67,11 @@ function getIpAddress () : array
 }
 
 try {
+    if ( isset( $_GET["skip"] ) ) {
+        echo ".";
+        exit( 0 );
+    }
+
     $ipInfo = getIpAddress();
 
     $databaseLoader->load( new Row( [
