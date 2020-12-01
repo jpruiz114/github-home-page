@@ -12,49 +12,19 @@ use Coco\SourceWatcher\Core\Row;
 use Coco\SourceWatcher\Core\SourceWatcherException;
 use Dotenv\Dotenv;
 
-function getEnvironmentVariable ( string $variableName, $default, $castingFunctionName = null )
-{
-    $keyExists = array_key_exists( $variableName, $_ENV );
-    $value = null;
-
-    if ( $keyExists ) {
-        $value = $_ENV[$variableName];
-    } else {
-        $dotenv = Dotenv::createImmutable( __DIR__ . "/../" );
-        $dotenv->load();
-
-        $value = getenv( $variableName );
-
-        if ( empty( $value ) ) {
-            $value = $default;
-        }
-    }
-
-    if ( !empty( $castingFunctionName ) ) {
-        return call_user_func( $castingFunctionName, $value );
-    }
-
-    return $value;
-}
-
-$dbHost = getEnvironmentVariable( "DB_HOST", null );
-$dbUsername = getEnvironmentVariable( "DB_USERNAME", null );
-$dbPassword = getEnvironmentVariable( "DB_PASSWORD", null );
-$dbPort = getEnvironmentVariable( "DB_PORT", null );
-$dbDatabase = getEnvironmentVariable( "DB_DATABASE", null );
+$dotenv = Dotenv::createImmutable( __DIR__ . "/../" );
+$dotenv->load();
 
 $mysqlConnector = new MySqlConnector();
-$mysqlConnector->setHost( $dbHost );
-$mysqlConnector->setUser( $dbUsername );
-$mysqlConnector->setPassword( $dbPassword );
-$mysqlConnector->setPort( intval( $dbPort ) );
-$mysqlConnector->setDbName( $dbDatabase );
+$mysqlConnector->setHost( $_ENV( "DB_HOST" ) );
+$mysqlConnector->setUser( $_ENV( "DB_USERNAME" ) );
+$mysqlConnector->setPassword( $_ENV( "DB_PASSWORD" ) );
+$mysqlConnector->setPort( intval( $_ENV( "DB_PORT" ) ) );
+$mysqlConnector->setDbName( $_ENV( "DB_DATABASE" ) );
 $mysqlConnector->setTableName( "visit" );
 
-$databaseOutput = new DatabaseOutput( $mysqlConnector );
-
 $databaseLoader = new DatabaseLoader();
-$databaseLoader->setOutput( $databaseOutput );
+$databaseLoader->setOutput( new DatabaseOutput( $mysqlConnector ) );
 
 function getIpAddress () : array
 {
