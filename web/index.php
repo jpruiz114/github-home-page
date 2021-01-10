@@ -90,15 +90,16 @@ try {
 
     $image = imagecreatetruecolor( 350, 20 );
 
+    // Transparent background
+    imagesavealpha( $image, true );
+    $color = imagecolorallocatealpha( $image, 0, 0, 0, 127 );
+    imagefill( $image, 0, 0, $color );
+
     // Blue text
     $textColor = imagecolorallocate( $image, 0, 0, 255 );
 
     // Write the string at the top left
     imagestring( $image, 5, 0, 0, "My page has been loaded $totalVisits times!", $textColor );
-
-    imagesavealpha( $image, true );
-    $color = imagecolorallocatealpha( $image, 0, 0, 0, 127 );
-    imagefill( $image, 0, 0, $color );
 
     // Output the image
     header( 'Content-type: image/png' );
